@@ -1,1309 +1,715 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LS Aim - Link Shortener</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #2563eb;
-            --secondary: #3b82f6;
-            --accent: #10b981;
-            --dark: #1f2937;
-            --light: #f9fafb;
-            --gray: #6b7280;
-        }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Auth Styles */
-        .auth-box {
-            background: white;
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            color: #667eea;
-        }
-
-        .logo i {
-            font-size: 2.5rem;
-        }
-
-        .logo h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-        }
-
-        .form-container h2 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 1.8rem;
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #667eea;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: 2px solid #e1e1e1;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(to right, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .switch-text {
-            margin-top: 20px;
-            color: #666;
-        }
-
-        .switch-text a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .switch-text a:hover {
-            text-decoration: underline;
-        }
-
-        /* App Styles */
-        header {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        #userName {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .btn-logout {
-            background: #ff4757;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-logout:hover {
-            background: #ff3742;
-        }
-
-        /* Card Styles */
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .card h2 {
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card .input-group {
-            margin-bottom: 20px;
-        }
-
-        .card .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card .input-group input {
-            padding: 12px;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 1rem;
-        }
-
-        .card .input-group small {
-            display: block;
-            margin-top: 5px;
-            color: #888;
-            font-size: 0.85rem;
-        }
-
-        /* Links List */
-        .links-list {
-            display: grid;
-            gap: 15px;
-        }
-
-        .link-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .link-item:hover {
-            transform: translateX(5px);
-            background: #f0f2ff;
-        }
-
-        .link-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .link-note {
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1rem;
-        }
-
-        .link-date {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .link-short {
-            color: #667eea;
-            font-weight: 500;
-            margin-bottom: 5px;
-            word-break: break-all;
-        }
-
-        .link-original {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            word-break: break-all;
-        }
-
-        .link-stats {
-            display: flex;
-            gap: 15px;
-            color: #888;
-            font-size: 0.85rem;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .close {
-            position: absolute;
-            right: 25px;
-            top: 20px;
-            font-size: 28px;
-            color: #aaa;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .close:hover {
-            color: #333;
-        }
-
-        .modal-body {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin: 20px 0;
-        }
-
-        .copy-box {
-            display: flex;
-            gap: 10px;
-            margin: 10px 0 20px;
-        }
-
-        .copy-box input {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .btn-copy {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .btn-copy:hover {
-            background: #5a6fd8;
-        }
-
-        .original-link {
-            color: #666;
-            word-break: break-all;
-            margin: 10px 0 20px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .qr-section {
-            text-align: center;
-        }
-
-        #qrcode {
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e1e1e1;
-        }
-
-        .btn-danger {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .btn-danger:hover {
-            background: #ff3742;
-        }
-
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
-        }
-
-        .loading i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Error State */
-        .error {
-            color: #ff4757;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* Password Toggle Eye */
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #667eea;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 5px;
-        }
-
-        .password-toggle:hover {
-            color: #5a6fd8;
-        }
-
-        /* Alert Modal */
-        .alert-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .alert-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .alert-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .alert-icon.success {
-            color: #10b981;
-        }
-
-        .alert-icon.error {
-            color: #ff4757;
-        }
-
-        .alert-icon.warning {
-            color: #f59e0b;
-        }
-
-        .alert-icon.info {
-            color: #667eea;
-        }
-
-        .alert-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .alert-message {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .modal-body {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-content {
-                margin: 20px;
-                padding: 20px;
-            }
-            
-            header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .user-info {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .auth-box {
-                margin: 20px auto;
-                padding: 20px;
-            }
-            
-            body {
-                padding: 10px;
-            }
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            display: none;
-            z-index: 1001;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .notification.error {
-            background: #ff4757;
-        }
-
-        .notification.active {
-            display: block;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ls AiM - Link Shortener</title> 
+  <meta name="theme-color" content="#22d3ee" />
+  <meta name="description" content="Best Link Shortener Application powered by Firebase" /> 
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <style>
+    body { 
+        font-family: 'Poppins', 'Hind Siliguri', sans-serif; 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+        min-height: 100vh;
+    }
+    
+    .glass-card { 
+        background: rgba(30, 41, 59, 0.6); 
+        backdrop-filter: blur(12px); 
+        -webkit-backdrop-filter: blur(12px); 
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        border-radius: 1.5rem; 
+    }
+    
+    .input-field { 
+        background-color: #1e293b; 
+        border: 1px solid #334155; 
+        border-radius: 0.75rem; 
+        padding: 0.75rem 1rem; 
+        color: white; 
+        transition: all 0.3s ease; 
+        width: 100%;
+    }
+    
+    .input-field:focus-within {
+        border-color: #22d3ee;
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+    
+    .btn-primary { 
+        background: linear-gradient(90deg, #22d3ee, #06b6d4); 
+        border-radius: 0.75rem; 
+        padding: 0.8rem 1.5rem; 
+        font-weight: 600; 
+        color: #0f172a; 
+        transition: all 0.3s ease; 
+        box-shadow: 0 4px 20px rgba(34, 211, 238, 0.3); 
+        border: none;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .btn-primary:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 6px 25px rgba(34, 211, 238, 0.4);
+    }
+
+    .btn-secondary {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        padding: 0.5rem 1rem;
+        color: #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: rgba(51, 65, 85, 0.8);
+        border-color: #22d3ee;
+        color: #22d3ee;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    
+    /* Result Box Animation */
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-20px); height: 0; }
+        to { opacity: 1; transform: translateY(0); height: auto; }
+    }
+    
+    .slide-down {
+        animation: slideDown 0.4s ease-out forwards;
+    }
+  </style>
 </head>
-<body>
-    <!-- Alert Modal -->
-    <div id="alertModal" class="alert-modal">
-        <div class="alert-content">
-            <div id="alertIcon" class="alert-icon info">
-                <i class="fas fa-info-circle"></i>
-            </div>
-            <h3 id="alertTitle" class="alert-title">Alert Title</h3>
-            <p id="alertMessage" class="alert-message">Alert message goes here</p>
-            <button onclick="closeAlert()" class="btn btn-primary">OK</button>
+
+<body class="min-h-screen">
+  <header class="fixed top-0 left-0 right-0 z-40 bg-slate-900/80 backdrop-blur-lg border-b border-slate-700/50">
+    <div class="container mx-auto px-4 py-3">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          
+          <div class="w-10 h-10 rounded-xl object-cover border border-cyan-500/30 flex items-center justify-center bg-cyan-900/50">
+             <img src="1000066307.jpg" 
+                  onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'#22d3ee\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\'></path><path d=\'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\'></path></svg>\'" 
+                  alt="ls AiM Logo" 
+                  class="w-8 h-8 object-contain">
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white tracking-wide">ls AiM</h1>
+            <p class="text-xs text-cyan-400">স্মার্ট লিঙ্ক সলিউশন</p>
+          </div>
         </div>
-    </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
-
-    <!-- Auth Container -->
-    <div id="authContainer" class="container">
-        <div class="auth-box">
-            <div class="logo">
-                <i class="fas fa-link"></i>
-                <h1>LS Aim</h1>
-            </div>
-            
-            <div id="loginForm" class="form-container">
-                <h2>Login</h2>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="loginEmail" placeholder="Email" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="loginPassword" placeholder="Password" required>
-                    <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-                
-                <button onclick="login()" class="btn btn-primary" id="loginBtn">
-                    <span class="btn-text">Login</span>
-                    <div class="btn-loading hidden">
-                        <i class="fas fa-spinner fa-spin mr-2"></i> Logging in...
-                    </div>
-                </button>
-                
-                <div class="mt-6 text-center">
-                    <p class="text-slate-400">Don't have an account? 
-                        <a href="#" id="showSignUpBtn" class="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">Sign Up</a>
-                    </p>
-                </div>
-            </div>
-            
-            <div id="signupForm" class="form-container" style="display: none;">
-                <h2>Sign Up</h2>
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="signupName" placeholder="Full Name" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="signupEmail" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="signupPassword" placeholder="Password (min. 6 chars)" required>
-                    <button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-                <button onclick="signup()" class="btn btn-primary" id="signupBtn">
-                    <span class="btn-text">Sign Up</span>
-                    <div class="btn-loading hidden">
-                        <i class="fas fa-spinner fa-spin mr-2"></i> Creating Account...
-                    </div>
-                </button>
-                <p class="switch-text">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
-            </div>
+        
+        <div class="flex items-center gap-3">
+             <button id="logoutBtn" class="hidden md:flex text-sm text-slate-400 hover:text-white transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i> লগ আউট
+             </button>
+             <button id="mobileMenuBtn" class="md:hidden flex items-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 px-3 py-2 rounded-lg transition-colors">
+               <i class="fas fa-bars text-cyan-400"></i>
+             </button>
         </div>
+      </div>
     </div>
+  </header>
 
-    <!-- Main App Container -->
-    <div id="appContainer" class="container" style="display: none;">
-        <!-- Header -->
-        <header>
-            <div class="logo">
-                <i class="fas fa-link"></i>
-                <h1>LS Aim</h1>
+  <div class="pt-24 pb-6 px-4">
+    
+    <main id="authPage" class="max-w-md mx-auto fade-in">
+      <div class="text-center mb-8">
+        <div class="relative w-24 h-24 mx-auto mb-4">
+            <div class="absolute inset-0 bg-cyan-500 blur-xl opacity-20 rounded-full"></div>
+            <div class="relative w-full h-full rounded-2xl object-cover border-2 border-slate-700 flex items-center justify-center bg-cyan-900/50">
+                <img src="1000066307.jpg" 
+                     onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'#22d3ee\' stroke-width=\'1.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\'></path><path d=\'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\'></path></svg>\'" 
+                     alt="ls AiM Logo" 
+                     class="w-16 h-16 object-contain">
             </div>
-            <div class="user-info">
-                <span id="userName"></span>
-                <button onclick="logout()" class="btn btn-logout">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
             </div>
-        </header>
-
-        <!-- Main Content -->
-        <main>
-            <!-- Link Shortener -->
-            <section class="shortener-section">
-                <div class="card">
-                    <h2><i class="fas fa-plus-circle"></i> Create New Short Link</h2>
-                    <div class="input-group">
-                        <label for="originalUrl"><i class="fas fa-link"></i> Your Link</label>
-                        <input type="url" id="originalUrl" placeholder="https://example.com/very-long-url" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="alias"><i class="fas fa-tag"></i> Alias (Optional)</label>
-                        <input type="text" id="alias" placeholder="my-link">
-                        <small>If empty, random code will be generated</small>
-                    </div>
-                    <div class="input-group">
-                        <label for="note"><i class="fas fa-sticky-note"></i> Note</label>
-                        <input type="text" id="note" placeholder="Personal photo link" required>
-                        <small>Name to identify this link</small>
-                    </div>
-                    <button onclick="createShortLink()" class="btn btn-primary">
-                        <i class="fas fa-magic"></i> Create Short Link
-                    </button>
-                </div>
-            </section>
-
-            <!-- Recent Links -->
-            <section class="links-section">
-                <div class="card">
-                    <h2><i class="fas fa-history"></i> Your Links</h2>
-                    <div id="linksList" class="links-list">
-                        <!-- Links will be loaded here -->
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Link Details Modal -->
-    <div id="linkModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle"></h2>
+        <h1 class="text-4xl font-bold text-white mb-2">ls AiM</h1>
+        <p class="text-slate-400">আপনার লিঙ্ক ছোট করার সবচেয়ে সহজ মাধ্যম</p>
+      </div>
+      
+      <section id="authSection">
+        <div class="glass-card p-8 shadow-2xl shadow-cyan-900/10">
+          <h2 id="authTitle" class="text-2xl font-bold text-white mb-6 text-center">স্বাগতম</h2>
+          <form id="authForm" class="space-y-5">
+            <div>
+              <label for="authEmail" class="block text-sm font-medium text-slate-300 mb-2">ইমেইল অ্যাড্রেস</label>
+              <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"><i class="fas fa-envelope"></i></span>
+                  <input type="email" id="authEmail" class="w-full input-field pl-10" placeholder="hello@example.com" required>
+              </div>
+            </div>
             
-            <div class="modal-body">
-                <div class="link-info">
-                    <h3><i class="fas fa-link"></i> Short Link</h3>
-                    <div class="copy-box">
-                        <input type="text" id="modalShortLink" readonly>
-                        <button onclick="copyToClipboard('modalShortLink')" class="btn btn-copy">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                    </div>
-                    
-                    <h3><i class="fas fa-globe"></i> Original Link</h3>
-                    <p id="modalOriginalLink" class="original-link"></p>
-                    
-                    <h3><i class="fas fa-sticky-note"></i> Note</h3>
-                    <p id="modalNote"></p>
-                    
-                    <h3><i class="fas fa-calendar"></i> Created</h3>
-                    <p id="modalCreated"></p>
-                    
-                    <h3><i class="fas fa-mouse-pointer"></i> Clicks</h3>
-                    <p id="modalClicks">0</p>
+            <div>
+              <label for="authPassword" class="block text-sm font-medium text-slate-300 mb-2">পাসওয়ার্ড</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"><i class="fas fa-lock"></i></span>
+                <input type="password" id="authPassword" class="w-full input-field pl-10 pr-10" placeholder="••••••••" required>
+                <button type="button" class="toggle-password absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors">
+                  <ion-icon name="eye-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+            
+            <button type="submit" class="w-full btn-primary mt-4" id="authBtn">
+              <span class="btn-text">লগ ইন করুন</span>
+              <div class="btn-loading hidden flex items-center">
+                <i class="fas fa-spinner fa-spin mr-2"></i> অপেক্ষা করুন...
+              </div>
+            </button>
+          </form>
+          
+          <div class="mt-6 text-center">
+            <p class="text-slate-400 text-sm">
+              <span id="authToggleText">অ্যাকাউন্ট নেই?</span> 
+              <button id="authToggleButton" class="text-cyan-400 hover:text-cyan-300 transition-colors font-medium ml-1">সাইন আপ করুন</button>
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <main id="dashboardPage" class="hidden max-w-lg mx-auto fade-in">
+      
+      <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="glass-card p-4 flex flex-col items-center justify-center text-center">
+             <div class="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center mb-2 text-cyan-400">
+                 <i class="fas fa-link"></i>
+             </div>
+             <div class="text-2xl font-bold text-white" id="totalLinksCount">0</div>
+             <div class="text-xs text-slate-400">মোট লিঙ্ক</div>
+          </div>
+          <div class="glass-card p-4 flex flex-col items-center justify-center text-center">
+            <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-2 text-green-400">
+                <i class="fas fa-mouse-pointer"></i>
+            </div>
+            <div class="text-2xl font-bold text-white" id="totalClicksCount">0</div>
+            <div class="text-xs text-slate-400">মোট ক্লিক</div>
+         </div>
+      </div>
+
+      <div class="glass-card p-6 mb-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-cyan-500 blur-3xl opacity-10 rounded-full"></div>
+
+        <h2 class="text-xl font-bold text-white mb-1">নতুন লিঙ্ক তৈরি করুন</h2>
+        <p class="text-slate-400 text-sm mb-5">আপনার বড় লিঙ্কটি নিচে পেস্ট করুন</p>
+        
+        <form id="shortenForm" class="space-y-4 relative z-10">
+            <div class="relative">
+                <input type="url" id="longUrlInput" class="w-full input-field py-4 pl-4 pr-12 text-sm" placeholder="https://www.example.com/very-long-url..." required>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
+                    <i class="fas fa-paste hover:text-cyan-400 cursor-pointer" onclick="navigator.clipboard.readText().then(t => document.getElementById('longUrlInput').value = t)"></i>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <label for="customAliasInput" class="block text-sm font-medium text-slate-300 mb-2 mt-2">
+                    কাস্টম অ্যালিয়াস (ঐচ্ছিক)
+                </label>
+                <div class="flex items-center input-field p-0 focus-within:border-cyan-400">
+                    <span class="text-slate-500 pl-3 text-sm flex-shrink-0" id="domainPrefix">
+                        </span>
+                    <input type="text" id="customAliasInput" class="bg-transparent text-sm w-full outline-none p-3 border-none" 
+                           placeholder="যেমন: my-project-link">
+                </div>
+                <p id="aliasFeedback" class="text-xs mt-1 h-3 text-red-400"></p>
+            </div>
+
+            <button type="submit" class="w-full btn-primary shadow-lg shadow-cyan-500/20" id="shortenBtn">
+                <span class="btn-text flex items-center"><i class="fas fa-magic mr-2"></i> লিঙ্ক ছোট করুন</span>
+                <div class="btn-loading hidden flex items-center">
+                    <i class="fas fa-spinner fa-spin mr-2"></i> প্রসেসিং...
+                </div>
+            </button>
+        </form>
+
+        <div id="resultBox" class="hidden mt-6 bg-slate-800/80 rounded-xl p-4 border border-green-500/30">
+            <div class="flex flex-col space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-green-400 font-medium uppercase tracking-wider"><i class="fas fa-check-circle mr-1"></i> সফল হয়েছে</span>
+                    <button class="text-slate-400 hover:text-white" onclick="document.getElementById('resultBox').classList.add('hidden')"><i class="fas fa-times"></i></button>
                 </div>
                 
-                <div class="qr-section">
-                    <h3><i class="fas fa-qrcode"></i> QR Code</h3>
-                    <div id="qrcode"></div>
-                    <button onclick="downloadQR()" class="btn btn-primary">
-                        <i class="fas fa-download"></i> Download QR
+                <div class="flex items-center gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                    <input type="text" id="shortUrlDisplay" class="bg-transparent text-cyan-400 font-mono text-sm w-full outline-none" readonly value="https://example.com/xyz123">
+                    <button id="copyBtn" class="p-2 bg-cyan-500/10 hover:bg-cyan-500 hover:text-slate-900 text-cyan-400 rounded-md transition-all">
+                        <i class="fas fa-copy"></i>
                     </button>
                 </div>
-            </div>
-            
-            <div class="modal-actions">
-                <button onclick="visitLink()" class="btn btn-primary">
-                    <i class="fas fa-external-link-alt"></i> Visit Link
-                </button>
-                <button onclick="deleteLink()" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
+                
+                <div class="flex gap-2">
+                    <button class="flex-1 btn-secondary text-xs flex justify-center items-center gap-2" onclick="window.open(document.getElementById('shortUrlDisplay').value, '_blank')">
+                        <i class="fas fa-external-link-alt"></i> ভিজিট
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+      <div class="glass-card p-5">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">পূর্ববর্তী লিঙ্কসমূহ</h3>
+            <button class="text-xs text-cyan-400 hover:text-white" id="clearHistoryBtn">সব মুছুন</button>
+        </div>
+        
+        <div id="historyList" class="space-y-3">
+            <div id="noHistoryMessage" class="text-center py-8 opacity-50">
+                <i class="fas fa-history text-3xl mb-2 text-slate-600"></i>
+                <p class="text-sm">কোনো ইতিহাস নেই</p>
+            </div>
+        </div>
+      </div>
+
+    </main>
+
+    <div id="alertModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+      <div class="bg-slate-800 rounded-2xl p-6 max-w-sm w-full glass-card border-slate-600 animate-[fadeIn_0.3s_ease-out]">
         <div class="text-center">
-            <div class="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="text-white font-medium">Loading...</p>
+          <div id="alertIcon" class="fas fa-info-circle text-cyan-400 text-4xl mb-4"></div>
+          <h3 id="alertTitle" class="text-xl font-bold text-white mb-2">Title</h3>
+          <p id="alertMsg" class="text-slate-300 mb-6 text-sm">Message content.</p>
+          <button class="w-full btn-primary" onclick="document.getElementById('alertModal').classList.add('hidden')">ঠিক আছে</button>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Font Awesome Icons -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
-    <!-- QR Code Library -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
-    <!-- Main Application Script -->
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDEXAMPLE1234567890abcdefghijklmnopqrstuvw",
-            authDomain: "ls-aim.firebaseapp.com",
-            projectId: "ls-aim",
-            storageBucket: "ls-aim.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef1234567890"
-        };
+  <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBVvFtACmQg_urhBOgoSVGYE0D4pfPQczs",
+        authDomain: "aim-s-earning5.firebaseapp.com",
+        databaseURL: "https://aim-s-earning5-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "aim-s-earning5",
+        storageBucket: "aim-s-earning5.firebasestorage.app",
+        messagingSenderId: "314717951853",
+        appId: "1:314717951853:web:05fe777b43081fcf702c64",
+        measurementId: "G-5QV5M8NYT0"
+    };
 
-        // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            showAlert("Firebase configuration error. Please check your settings.", "Firebase Error", "error");
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // --- DOM Elements ---
+    const authPage = document.getElementById('authPage');
+    const dashboardPage = document.getElementById('dashboardPage');
+    const authForm = document.getElementById('authForm');
+    const authEmailInput = document.getElementById('authEmail');
+    const authPasswordInput = document.getElementById('authPassword');
+    const authBtn = document.getElementById('authBtn');
+    const authTitle = document.getElementById('authTitle');
+    const authToggleText = document.getElementById('authToggleText');
+    const authToggleButton = document.getElementById('authToggleButton');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    const shortenForm = document.getElementById('shortenForm');
+    const longUrlInput = document.getElementById('longUrlInput');
+    const customAliasInput = document.getElementById('customAliasInput');
+    const aliasFeedback = document.getElementById('aliasFeedback');
+    const domainPrefix = document.getElementById('domainPrefix');
+    const shortenBtn = document.getElementById('shortenBtn');
+    const resultBox = document.getElementById('resultBox');
+    const shortUrlDisplay = document.getElementById('shortUrlDisplay');
+    const copyBtn = document.getElementById('copyBtn');
+    const historyList = document.getElementById('historyList');
+    const totalLinksCount = document.getElementById('totalLinksCount');
+    const totalClicksCount = document.getElementById('totalClicksCount');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const noHistoryMessage = document.getElementById('noHistoryMessage');
+
+    let isLoginMode = true; // Default to login
+    let currentUserUid = null;
+    let unsubscribeFromLinks = null; // To manage real-time listener
+
+    // --- Utility Functions ---
+
+    function showLoader(btn) {
+        btn.querySelector('.btn-text').classList.add('hidden');
+        btn.querySelector('.btn-loading').classList.remove('hidden');
+        btn.disabled = true;
+    }
+
+    function hideLoader(btn, originalText) {
+        btn.querySelector('.btn-text').classList.remove('hidden');
+        btn.querySelector('.btn-loading').classList.add('hidden');
+        btn.querySelector('.btn-text').innerText = originalText; // Reset text
+        btn.disabled = false;
+    }
+
+    function generateShortId(length = 6) {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
+        return result;
+    }
 
-        // Firebase instances
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+    function showAlert(title, msg, type = 'info') {
+        const modal = document.getElementById('alertModal');
+        const icon = document.getElementById('alertIcon');
+        
+        document.getElementById('alertTitle').innerText = title;
+        document.getElementById('alertMsg').innerText = msg;
+        
+        if(type === 'success') icon.className = "fas fa-check-circle text-green-400 text-4xl mb-4";
+        else if(type === 'error') icon.className = "fas fa-times-circle text-red-400 text-4xl mb-4";
+        else icon.className = "fas fa-info-circle text-cyan-400 text-4xl mb-4";
+        
+        modal.classList.remove('hidden');
+    }
 
-        // DOM Elements
-        let currentLinkId = null;
-        let currentLinkData = null;
-
-        // Password toggle function
-        function togglePassword(inputId, button) {
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
-            
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const input = this.previousElementSibling;
             if (input.type === 'password') {
                 input.type = 'text';
-                icon.className = 'fas fa-eye-slash';
+                this.querySelector('ion-icon').setAttribute('name', 'eye-off-outline');
             } else {
                 input.type = 'password';
-                icon.className = 'fas fa-eye';
+                this.querySelector('ion-icon').setAttribute('name', 'eye-outline');
             }
-        }
+        });
+    });
 
-        // Alert Modal Functions
-        function showAlert(message, title = "Alert", type = "info") {
-            const modal = document.getElementById('alertModal');
-            const icon = document.getElementById('alertIcon');
-            const alertTitle = document.getElementById('alertTitle');
-            const alertMessage = document.getElementById('alertMessage');
-            
-            // Set icon based on type
-            icon.className = "alert-icon " + type;
-            icon.innerHTML = getIconForType(type);
-            
-            alertTitle.textContent = title;
-            alertMessage.textContent = message;
-            modal.style.display = 'flex';
-        }
+    function updateDomainPrefix() {
+        // ডোমেইন নামটি প্রদর্শন করা
+        domainPrefix.innerText = `${window.location.origin}/`;
+    }
 
-        function getIconForType(type) {
-            switch(type) {
-                case 'success': return '<i class="fas fa-check-circle"></i>';
-                case 'error': return '<i class="fas fa-exclamation-circle"></i>';
-                case 'warning': return '<i class="fas fa-exclamation-triangle"></i>';
-                default: return '<i class="fas fa-info-circle"></i>';
+    // --- Authentication Logic ---
+
+    authToggleButton.addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        if (isLoginMode) {
+            authTitle.innerText = 'স্বাগতম';
+            authBtn.querySelector('.btn-text').innerText = 'লগ ইন করুন';
+            authToggleText.innerText = 'অ্যাকাউন্ট নেই?';
+            authToggleButton.innerText = 'সাইন আপ করুন';
+        } else {
+            authTitle.innerText = 'নতুন অ্যাকাউন্ট তৈরি করুন';
+            authBtn.querySelector('.btn-text').innerText = 'সাইন আপ করুন';
+            authToggleText.innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে?';
+            authToggleButton.innerText = 'লগ ইন করুন';
+        }
+    });
+
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = authEmailInput.value;
+        const password = authPasswordInput.value;
+        
+        showLoader(authBtn);
+
+        try {
+            if (isLoginMode) {
+                await auth.signInWithEmailAndPassword(email, password);
+                // Auth state listener handles UI update
+            } else {
+                await auth.createUserWithEmailAndPassword(email, password);
+                showAlert("সফল!", "অ্যাকাউন্ট তৈরি হয়েছে। এখন লগ ইন করুন।", "success");
+                isLoginMode = true; // Switch to login mode after signup
+                authToggleButton.click(); // Update UI
             }
+        } catch (error) {
+            console.error("Auth Error:", error.message);
+            showAlert("ত্রুটি!", error.message, "error");
+        } finally {
+            hideLoader(authBtn, isLoginMode ? 'লগ ইন করুন' : 'সাইন আপ করুন');
         }
+    });
 
-        function closeAlert() {
-            document.getElementById('alertModal').style.display = 'none';
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await auth.signOut();
+            showAlert("বিদায়!", "সফলভাবে লগ আউট হয়েছে।", "info");
+        } catch (error) {
+            console.error("Logout Error:", error.message);
+            showAlert("ত্রুটি!", error.message, "error");
         }
+    });
 
-        // Notification system
-        function showNotification(message, type = "success") {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type} active`;
-            
-            setTimeout(() => {
-                notification.classList.remove('active');
-            }, 3000);
+    // Firebase Auth State Listener
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            showDashboard(user.uid);
+            logoutBtn.classList.remove('hidden');
+            updateDomainPrefix();
+        } else {
+            authPage.classList.remove('hidden');
+            dashboardPage.classList.add('hidden');
+            authPage.classList.add('fade-in');
+            logoutBtn.classList.add('hidden');
         }
+    });
 
-        // Auth Functions
-        function showSignup() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('signupForm').style.display = 'block';
+    // --- Dashboard & Link Shortening Logic ---
+
+    async function showDashboard(uid) {
+        currentUserUid = uid;
+        authPage.classList.add('hidden');
+        dashboardPage.classList.remove('hidden');
+        dashboardPage.classList.add('fade-in');
+        
+        if (unsubscribeFromLinks) {
+            unsubscribeFromLinks();
         }
+        loadUserLinks(uid);
+    }
 
-        function showLogin() {
-            document.getElementById('signupForm').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
-        }
-
-        // Login function with proper error handling
-        async function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            
-            if (!email || !password) {
-                showAlert("Please enter both email and password", "Missing Information", "warning");
-                return;
-            }
-            
-            // Show loading state
-            loginBtn.querySelector('.btn-text').classList.add('hidden');
-            loginBtn.querySelector('.btn-loading').classList.remove('hidden');
-            loginBtn.disabled = true;
-            
-            try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                console.log("User signed in:", userCredential.user);
-                
-                // Check if user is approved
-                const userDoc = await db.collection("users").doc(userCredential.user.uid).get();
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    
-                    if (!userData.approved) {
-                        showAlert("Your account is pending admin approval. Please wait for approval.", "Account Pending", "warning");
-                        await auth.signOut();
-                        return;
-                    }
-                }
-                
-                showAlert("Login successful!", "Success", "success");
-                
-                // Redirect to dashboard will happen in auth state change listener
-                
-            } catch (error) {
-                console.error("Login error:", error.code, error.message);
-                
-                // Handle specific Firebase errors
-                if (error.code === 'auth/wrong-password') {
-                    // Correct email, wrong password
-                    showAlert("Incorrect password. Please try again.", "Login Failed", "error");
-                } else if (error.code === 'auth/user-not-found') {
-                    // Both email and password wrong
-                    showAlert("Invalid credentials. Please sign up for an account.", "Account Not Found", "error");
-                } else if (error.code === 'auth/invalid-credential') {
-                    // General invalid credential
-                    showAlert("Invalid email or password.", "Login Failed", "error");
-                } else if (error.code === 'auth/network-request-failed') {
-                    // Network error
-                    showAlert("Network error. Please check your connection and try again.", "Connection Error", "error");
-                } else if (error.code === 'auth/too-many-requests') {
-                    // Too many attempts
-                    showAlert("Too many failed attempts. Please try again later.", "Too Many Attempts", "error");
-                } else {
-                    // Other errors
-                    showAlert("Login failed. Please check your connection and try again.", "Error", "error");
-                }
-            } finally {
-                // Reset button state
-                loginBtn.querySelector('.btn-text').classList.remove('hidden');
-                loginBtn.querySelector('.btn-loading').classList.add('hidden');
-                loginBtn.disabled = false;
-            }
-        }
-
-        async function signup() {
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const signupBtn = document.getElementById('signupBtn');
-            
-            if (!name || !email || !password) {
-                showAlert("Please fill all fields", "Missing Information", "warning");
-                return;
-            }
-            
-            if (password.length < 6) {
-                showAlert("Password must be at least 6 characters", "Weak Password", "warning");
-                return;
-            }
-            
-            // Show loading
-            signupBtn.querySelector('.btn-text').classList.add('hidden');
-            signupBtn.querySelector('.btn-loading').classList.remove('hidden');
-            signupBtn.disabled = true;
-            
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                
-                // Update user profile
-                await userCredential.user.updateProfile({
-                    displayName: name
+    async function loadUserLinks(uid) {
+        // রিয়েল-টাইম Firestore লিসেনার
+        unsubscribeFromLinks = db.collection('users').doc(uid).collection('links')
+            .orderBy('createdAt', 'desc')
+            .onSnapshot(snapshot => {
+                const links = [];
+                let totalClicks = 0;
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    links.push({ id: doc.id, ...data });
+                    totalClicks += data.clicks || 0;
                 });
-                
-                // Create user document
-                await db.collection("users").doc(userCredential.user.uid).set({
-                    email: email,
-                    name: name,
-                    approved: true, // Auto-approve for now
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    totalLinks: 0
-                });
-                
-                showAlert("Account created successfully!", "Success", "success");
-                showLogin();
-                document.getElementById('signupForm').reset();
-                
-            } catch (error) {
-                console.error("Sign up error:", error);
-                
-                if (error.code === 'auth/email-already-in-use') {
-                    showAlert("An account with this email already exists.", "Email Exists", "error");
-                } else if (error.code === 'auth/invalid-email') {
-                    showAlert("Invalid email address.", "Invalid Email", "error");
-                } else if (error.code === 'auth/weak-password') {
-                    showAlert("Password is too weak.", "Weak Password", "error");
-                } else {
-                    showAlert("Sign up failed. Please try again.", "Error", "error");
-                }
-            } finally {
-                signupBtn.querySelector('.btn-text').classList.remove('hidden');
-                signupBtn.querySelector('.btn-loading').classList.add('hidden');
-                signupBtn.disabled = false;
-            }
-        }
+                renderHistory(links);
+                updateStats(links.length, totalClicks);
+            }, error => {
+                console.error("Error loading links:", error);
+                showAlert("ত্রুটি!", "লিঙ্ক লোড করতে সমস্যা হয়েছে।", "error");
+            });
+    }
 
-        function logout() {
-            auth.signOut()
-                .then(() => {
-                    showAlert("Logged out successfully", "Success", "success");
-                })
-                .catch((error) => {
-                    showAlert("Logout error: " + error.message, "Error", "error");
-                });
-        }
+    shortenForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const longUrl = longUrlInput.value;
+        let customAlias = customAliasInput.value.trim();
+        aliasFeedback.innerText = ''; // Clear previous feedback
 
-        // Generate short code
-        function generateShortCode() {
-            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < 6; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
+        showLoader(shortenBtn);
 
-        // Create Short Link
-        async function createShortLink() {
-            const user = auth.currentUser;
-            if (!user) {
-                showAlert("Please login first", "Authentication Required", "error");
-                return;
-            }
-            
-            const originalUrl = document.getElementById('originalUrl').value;
-            let alias = document.getElementById('alias').value.trim();
-            const note = document.getElementById('note').value.trim();
-            
-            if (!originalUrl || !note) {
-                showAlert("Please fill in all required fields", "Missing Information", "warning");
-                return;
-            }
-            
-            // Validate URL
-            try {
-                new URL(originalUrl);
-            } catch {
-                showAlert("Please enter a valid URL", "Invalid URL", "error");
-                return;
-            }
-            
-            // Generate short code
-            const shortCode = alias || generateShortCode();
-            
-            // Create link document
-            const linkData = {
-                userId: user.uid,
-                originalUrl: originalUrl,
-                shortCode: shortCode,
-                note: note,
-                clicks: 0,
-                createdAt: new Date(),
-                userName: user.displayName || user.email.split('@')[0]
-            };
-            
-            try {
-                await db.collection('links').add(linkData);
-                
-                // Clear form
-                document.getElementById('originalUrl').value = '';
-                document.getElementById('alias').value = '';
-                document.getElementById('note').value = '';
-                
-                // Reload links
-                loadUserLinks(user.uid);
-                
-                showAlert("Short link created successfully!", "Success", "success");
-            } catch (error) {
-                console.error("Error creating link:", error);
-                showAlert("Error creating link. Please try again.", "Error", "error");
-            }
-        }
-
-        // Load User Links
-        async function loadUserLinks(userId) {
-            const linksList = document.getElementById('linksList');
-            linksList.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading links...</div>';
-            
-            try {
-                const snapshot = await db.collection('links')
-                    .where('userId', '==', userId)
-                    .orderBy('createdAt', 'desc')
-                    .get();
-                
-                if (snapshot.empty) {
-                    linksList.innerHTML = '<div class="error">No links created yet. Create your first short link above!</div>';
+        try {
+            // ১. কাস্টম অ্যালিয়াস চেক ও ভ্যালিডেশন
+            let shortId;
+            if (customAlias) {
+                if (!/^[a-zA-Z0-9_-]{3,}$/.test(customAlias)) {
+                    aliasFeedback.innerText = 'অ্যালিয়াসটি শুধুমাত্র অক্ষর, সংখ্যা, ড্যাশ বা আন্ডারস্কোর হতে পারে (সর্বনিম্ন ৩ অক্ষর)।';
+                    hideLoader(shortenBtn, 'লিঙ্ক ছোট করুন');
                     return;
                 }
-                
-                linksList.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const link = doc.data();
-                    const linkElement = createLinkElement(doc.id, link);
-                    linksList.appendChild(linkElement);
-                });
-            } catch (error) {
-                console.error("Error loading links:", error);
-                linksList.innerHTML = '<div class="error">Error loading links. Please refresh the page.</div>';
-            }
-        }
-
-        // Create Link Element
-        function createLinkElement(linkId, link) {
-            const div = document.createElement('div');
-            div.className = 'link-item';
-            div.onclick = () => openLinkModal(linkId, link);
-            
-            const shortUrl = `${window.location.origin}/${link.shortCode}`;
-            const date = link.createdAt?.toDate ? link.createdAt.toDate().toLocaleDateString() : new Date(link.createdAt).toLocaleDateString();
-            
-            div.innerHTML = `
-                <div class="link-header">
-                    <div class="link-note">${link.note}</div>
-                    <div class="link-date">${date}</div>
-                </div>
-                <div class="link-short">${shortUrl}</div>
-                <div class="link-original">${link.originalUrl.substring(0, 60)}${link.originalUrl.length > 60 ? '...' : ''}</div>
-                <div class="link-stats">
-                    <span><i class="fas fa-mouse-pointer"></i> ${link.clicks} clicks</span>
-                </div>
-            `;
-            
-            return div;
-        }
-
-        // Modal Functions
-        function openLinkModal(linkId, linkData) {
-            currentLinkId = linkId;
-            currentLinkData = linkData;
-            
-            const modal = document.getElementById('linkModal');
-            const shortUrl = `${window.location.origin}/${linkData.shortCode}`;
-            
-            document.getElementById('modalTitle').textContent = linkData.note;
-            document.getElementById('modalShortLink').value = shortUrl;
-            document.getElementById('modalOriginalLink').textContent = linkData.originalUrl;
-            document.getElementById('modalNote').textContent = linkData.note;
-            document.getElementById('modalClicks').textContent = linkData.clicks;
-            
-            const date = linkData.createdAt?.toDate ? linkData.createdAt.toDate().toLocaleString() : new Date(linkData.createdAt).toLocaleString();
-            document.getElementById('modalCreated').textContent = date;
-            
-            // Generate QR Code
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
-            QRCode.toCanvas(qrcodeDiv, shortUrl, {
-                width: 200,
-                height: 200,
-                margin: 1
-            }, function (error) {
-                if (error) {
-                    console.error("QR Code error:", error);
-                    qrcodeDiv.innerHTML = '<p>Error generating QR Code</p>';
-                }
-            });
-            
-            modal.style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('linkModal').style.display = 'none';
-        }
-
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            element.select();
-            element.setSelectionRange(0, 99999);
-            
-            try {
-                navigator.clipboard.writeText(element.value)
-                    .then(() => {
-                        showAlert("Copied to clipboard!", "Success", "success");
-                    })
-                    .catch(() => {
-                        // Fallback for older browsers
-                        document.execCommand('copy');
-                        showAlert("Copied to clipboard!", "Success", "success");
-                    });
-            } catch (error) {
-                document.execCommand('copy');
-                showAlert("Copied to clipboard!", "Success", "success");
-            }
-        }
-
-        function visitLink() {
-            if (currentLinkData) {
-                // Increment click count
-                db.collection('links').doc(currentLinkId).update({
-                    clicks: firebase.firestore.FieldValue.increment(1)
-                });
-                
-                // Open link in new tab
-                window.open(`${window.location.origin}/${currentLinkData.shortCode}`, '_blank');
-                closeModal();
-            }
-        }
-
-        async function deleteLink() {
-            if (!confirm('Are you sure you want to delete this link?')) return;
-            
-            try {
-                await db.collection('links').doc(currentLinkId).delete();
-                
-                closeModal();
-                loadUserLinks(auth.currentUser.uid);
-                showAlert("Link deleted successfully!", "Success", "success");
-            } catch (error) {
-                showAlert("Error deleting link. Please try again.", "Error", "error");
-            }
-        }
-
-        function downloadQR() {
-            const canvas = document.querySelector('#qrcode canvas');
-            if (canvas) {
-                const link = document.createElement('a');
-                link.download = `${currentLinkData.shortCode}-qrcode.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                shortId = customAlias;
             } else {
-                showAlert("QR Code not available", "Error", "error");
+                // স্বয়ংক্রিয় ID তৈরি
+                shortId = generateShortId();
             }
-        }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('linkModal');
-            if (event.target == modal) {
-                closeModal();
-            }
-            
-            const alertModal = document.getElementById('alertModal');
-            if (event.target == alertModal) {
-                closeAlert();
-            }
-        };
+            // ২. ডুপ্লিকেট চেক: প্রথমে ব্যবহারকারীর নিজস্ব লিঙ্ক চেক
+            const existingLinkQuery = await db.collection('users').doc(currentUserUid)
+                                    .collection('links').where('longUrl', '==', longUrl).get();
 
-        // Auth state observer
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in
-                document.getElementById('authContainer').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
-                loadUserLinks(user.uid);
-            } else {
-                // User is signed out
-                document.getElementById('authContainer').style.display = 'block';
-                document.getElementById('appContainer').style.display = 'none';
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('signupForm').style.display = 'none';
-            }
-        });
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("Page loaded successfully");
-            
-            // Check if Firebase is initialized
-            if (!auth || !db) {
-                showAlert("Firebase not initialized properly", "Configuration Error", "error");
+            if (!existingLinkQuery.empty) {
+                const doc = existingLinkQuery.docs[0];
+                const data = doc.data();
+                const fullShortUrl = `${window.location.origin}/${doc.id}`;
+                shortUrlDisplay.value = fullShortUrl;
+                resultBox.classList.remove('hidden');
+                resultBox.classList.add('slide-down');
+                showAlert("ইতিমধ্যে বিদ্যমান!", "এই লিঙ্কটি আপনি আগেই ছোট করেছেন।", "info");
                 return;
             }
             
-            // Add Enter key support
-            document.getElementById('loginEmail')?.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
-            });
-            
-            document.getElementById('loginPassword')?.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
-            });
-            
-            document.getElementById('originalUrl')?.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') createShortLink();
-            });
-            
-            // Show signup button event
-            document.getElementById('showSignUpBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                showSignup();
-            });
-            
-            // Show login button event
-            document.querySelectorAll('[onclick="showLogin()"]').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showLogin();
-                });
-            });
-        });
+            // ৩. ডুপ্লিকেট চেক: কাস্টম/অটো ID গ্লোবালি চেক
+            let currentShortId = shortId;
+            let isUnique = false;
+            let attempt = 0;
 
-        // Redirect function for short links
-        if (window.location.pathname.length > 1 && window.location.pathname !== '/') {
-            const shortCode = window.location.pathname.substring(1);
+            while(!isUnique && attempt < 10) { 
+                 const doc = await db.collection('all_short_links').doc(currentShortId).get();
+                 
+                 if (!doc.exists) {
+                    isUnique = true;
+                 } else if (customAlias) {
+                    // কাস্টম অ্যালিয়াস যদি আগে থেকেই থাকে তবে এরর দিয়ে লুপ থেকে বের হওয়া
+                    aliasFeedback.innerText = 'এই কাস্টম অ্যালিয়াসটি ইতিমধ্যে ব্যবহৃত হয়েছে। অন্য একটি ব্যবহার করুন।';
+                    hideLoader(shortenBtn, 'লিঙ্ক ছোট করুন');
+                    return;
+                 } else {
+                    // অটো-জেনারেটেড ID ডুপ্লিকেট হলে নতুন ID তৈরি করা
+                    currentShortId = generateShortId();
+                 }
+                 attempt++;
+            }
+
+            if (!isUnique) {
+                showAlert("ত্রুটি!", "স্বয়ংক্রিয় ID তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
+                return;
+            }
+
+            shortId = currentShortId; // নিশ্চিত ইউনিক আইডি সেট করা হলো
             
-            // Check if it's a short link and redirect
-            db.collection('links')
-                .where('shortCode', '==', shortCode)
-                .limit(1)
-                .get()
-                .then((snapshot) => {
-                    if (!snapshot.empty) {
-                        const linkData = snapshot.docs[0].data();
-                        
-                        // Update click count
-                        db.collection('links').doc(snapshot.docs[0].id).update({
-                            clicks: firebase.firestore.FieldValue.increment(1)
-                        });
-                        
-                        // Redirect to original URL
-                        window.location.href = linkData.originalUrl;
-                    } else {
-                        // Not a valid short link, show the main app
-                        console.log("Not a valid short link, showing main app");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Redirect error:", error);
-                });
+            // ৪. Firebase এ সংরক্ষণ
+            const fullShortUrl = `${window.location.origin}/${shortId}`;
+
+            const newLink = {
+                longUrl: longUrl,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                clicks: 0,
+                userId: currentUserUid 
+            };
+
+            // গ্লোবাল এবং ইউজার কালেকশনে ডেটা সেভ করা (doc.id হিসেবে shortId ব্যবহার করা)
+            await db.collection('users').doc(currentUserUid).collection('links').doc(shortId).set(newLink);
+            await db.collection('all_short_links').doc(shortId).set(newLink);
+
+
+            shortUrlDisplay.value = fullShortUrl;
+            resultBox.classList.remove('hidden');
+            resultBox.classList.add('slide-down');
+            customAliasInput.value = ""; // Clear alias input
+            longUrlInput.value = ""; // Clear long URL input
+            showAlert("সফল!", `আপনার লিঙ্ক সফলভাবে ছোট করা হয়েছে: ${shortId}`, "success");
+
+        } catch (error) {
+            console.error("Shorten Error:", error);
+            showAlert("ত্রুটি!", "লিঙ্ক ছোট করতে সমস্যা হয়েছে: " + error.message, "error");
+        } finally {
+            hideLoader(shortenBtn, 'লিঙ্ক ছোট করুন');
         }
-    </script>
+    });
+
+    // --- Copy Logic ---
+    copyBtn.addEventListener('click', function() {
+        shortUrlDisplay.select();
+        document.execCommand('copy');
+        
+        const originalHtml = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check"></i>';
+        this.classList.add('bg-green-500', 'text-slate-900');
+        
+        setTimeout(() => {
+            this.innerHTML = originalHtml;
+            this.classList.remove('bg-green-500', 'text-slate-900');
+        }, 2000);
+    });
+
+    // --- History & Stats Rendering ---
+    function updateStats(numLinks, numClicks) {
+        totalLinksCount.innerText = numLinks;
+        totalClicksCount.innerText = numClicks;
+    }
+
+    function renderHistory(links) {
+        historyList.innerHTML = ''; // Clear existing history
+        if (links.length === 0) {
+            noHistoryMessage.classList.remove('hidden');
+            return;
+        }
+        noHistoryMessage.classList.add('hidden');
+
+        links.forEach(link => {
+            const date = link.createdAt ? new Date(link.createdAt.seconds * 1000).toLocaleDateString('bn-BD') : 'এখনই';
+            const fullShortLink = `${window.location.origin}/${link.id}`;
+
+            const linkHtml = `
+            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 hover:border-cyan-500/30 transition-colors group">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-cyan-400">
+                            <i class="fas fa-link text-xs"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-medium text-sm truncate max-w-[150px]">${link.id} (${link.clicks} ক্লিক)</h4>
+                            <p class="text-slate-500 text-[10px]">${date}</p>
+                        </div>
+                    </div>
+                    <button onclick="copyText('${fullShortLink}', this)" class="text-slate-400 hover:text-cyan-400 transition-colors">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <div class="bg-slate-900/50 rounded p-2 text-[10px] text-slate-400 truncate border-l-2 border-slate-600">
+                    ${link.longUrl}
+                </div>
+            </div>
+            `;
+            historyList.insertAdjacentHTML('beforeend', linkHtml);
+        });
+    }
+
+    // Global copy function for history items
+    window.copyText = (text, btn) => {
+        const temp = document.createElement('input');
+        document.body.appendChild(temp);
+        temp.value = text;
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        
+        const icon = btn.querySelector('i');
+        icon.className = 'fas fa-check text-green-400';
+        setTimeout(() => icon.className = 'far fa-copy', 1500);
+    };
+
+    // Clear History (Clears only user's links, global links remain for redirection)
+    clearHistoryBtn.addEventListener('click', async () => {
+        if(confirm('আপনি কি সব ইতিহাস মুছে ফেলতে চান? এটি শুধুমাত্র ড্যাশবোর্ড থেকে মুছে যাবে।')) {
+            showLoader(clearHistoryBtn);
+             try {
+                // Get all links to delete
+                const linksSnapshot = await db.collection('users').doc(currentUserUid).collection('links').get();
+                const batch = db.batch();
+                
+                linksSnapshot.forEach(doc => {
+                    batch.delete(doc.ref);
+                    // NOTE: Global links in 'all_short_links' are NOT deleted here, 
+                    // allowing existing short links to continue working, but they won't appear on the user's dashboard.
+                });
+
+                await batch.commit();
+                showAlert("সফল!", "ইতিহাস মুছে ফেলা হয়েছে।", "success");
+
+             } catch (error) {
+                console.error("Clear History Error:", error);
+                showAlert("ত্রুটি!", "ইতিহাস মুছতে সমস্যা হয়েছে।", "error");
+             } finally {
+                hideLoader(clearHistoryBtn, 'সব মুছুন');
+             }
+        }
+    });
+
+  </script>
 </body>
 </html>
