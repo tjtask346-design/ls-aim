@@ -12,6 +12,15 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -403,6 +412,88 @@
             padding: 20px;
         }
 
+        /* Password Toggle Eye */
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+
+        .password-toggle:hover {
+            color: #5a6fd8;
+        }
+
+        /* Alert Modal */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .alert-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .alert-icon.success {
+            color: #10b981;
+        }
+
+        .alert-icon.error {
+            color: #ff4757;
+        }
+
+        .alert-icon.warning {
+            color: #f59e0b;
+        }
+
+        .alert-icon.info {
+            color: #667eea;
+        }
+
+        .alert-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .alert-message {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .modal-body {
@@ -452,7 +543,7 @@
 
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .notification.error {
@@ -465,6 +556,18 @@
     </style>
 </head>
 <body>
+    <!-- Alert Modal -->
+    <div id="alertModal" class="alert-modal">
+        <div class="alert-content">
+            <div id="alertIcon" class="alert-icon info">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <h3 id="alertTitle" class="alert-title">Alert Title</h3>
+            <p id="alertMessage" class="alert-message">Alert message goes here</p>
+            <button onclick="closeAlert()" class="btn btn-primary">OK</button>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
@@ -482,12 +585,27 @@
                     <i class="fas fa-envelope"></i>
                     <input type="email" id="loginEmail" placeholder="Email" required>
                 </div>
+                
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
                     <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
-                <button onclick="login()" class="btn btn-primary">Login</button>
-                <p class="switch-text">Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+                
+                <button onclick="login()" class="btn btn-primary" id="loginBtn">
+                    <span class="btn-text">Login</span>
+                    <div class="btn-loading hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> Logging in...
+                    </div>
+                </button>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-slate-400">Don't have an account? 
+                        <a href="#" id="showSignUpBtn" class="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">Sign Up</a>
+                    </p>
+                </div>
             </div>
             
             <div id="signupForm" class="form-container" style="display: none;">
@@ -503,8 +621,16 @@
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
                     <input type="password" id="signupPassword" placeholder="Password (min. 6 chars)" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
-                <button onclick="signup()" class="btn btn-primary">Sign Up</button>
+                <button onclick="signup()" class="btn btn-primary" id="signupBtn">
+                    <span class="btn-text">Sign Up</span>
+                    <div class="btn-loading hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> Creating Account...
+                    </div>
+                </button>
                 <p class="switch-text">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
             </div>
         </div>
@@ -613,6 +739,14 @@
         </div>
     </div>
 
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-white font-medium">Loading...</p>
+        </div>
+    </div>
+
     <!-- Font Awesome Icons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     
@@ -642,7 +776,7 @@
             console.log("Firebase initialized successfully");
         } catch (error) {
             console.error("Firebase initialization error:", error);
-            showNotification("Firebase configuration error. Please check your settings.", "error");
+            showAlert("Firebase configuration error. Please check your settings.", "Firebase Error", "error");
         }
 
         // Firebase instances
@@ -652,6 +786,49 @@
         // DOM Elements
         let currentLinkId = null;
         let currentLinkData = null;
+
+        // Password toggle function
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // Alert Modal Functions
+        function showAlert(message, title = "Alert", type = "info") {
+            const modal = document.getElementById('alertModal');
+            const icon = document.getElementById('alertIcon');
+            const alertTitle = document.getElementById('alertTitle');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            // Set icon based on type
+            icon.className = "alert-icon " + type;
+            icon.innerHTML = getIconForType(type);
+            
+            alertTitle.textContent = title;
+            alertMessage.textContent = message;
+            modal.style.display = 'flex';
+        }
+
+        function getIconForType(type) {
+            switch(type) {
+                case 'success': return '<i class="fas fa-check-circle"></i>';
+                case 'error': return '<i class="fas fa-exclamation-circle"></i>';
+                case 'warning': return '<i class="fas fa-exclamation-triangle"></i>';
+                default: return '<i class="fas fa-info-circle"></i>';
+            }
+        }
+
+        function closeAlert() {
+            document.getElementById('alertModal').style.display = 'none';
+        }
 
         // Notification system
         function showNotification(message, type = "success") {
@@ -675,62 +852,141 @@
             document.getElementById('loginForm').style.display = 'block';
         }
 
-        function login() {
+        // Login function with proper error handling
+        async function login() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
             
             if (!email || !password) {
-                showNotification("Please enter email and password", "error");
+                showAlert("Please enter both email and password", "Missing Information", "warning");
                 return;
             }
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    showNotification("Login successful!");
-                })
-                .catch((error) => {
-                    showNotification("Login failed: " + error.message, "error");
-                });
+            // Show loading state
+            loginBtn.querySelector('.btn-text').classList.add('hidden');
+            loginBtn.querySelector('.btn-loading').classList.remove('hidden');
+            loginBtn.disabled = true;
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                console.log("User signed in:", userCredential.user);
+                
+                // Check if user is approved
+                const userDoc = await db.collection("users").doc(userCredential.user.uid).get();
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    
+                    if (!userData.approved) {
+                        showAlert("Your account is pending admin approval. Please wait for approval.", "Account Pending", "warning");
+                        await auth.signOut();
+                        return;
+                    }
+                }
+                
+                showAlert("Login successful!", "Success", "success");
+                
+                // Redirect to dashboard will happen in auth state change listener
+                
+            } catch (error) {
+                console.error("Login error:", error.code, error.message);
+                
+                // Handle specific Firebase errors
+                if (error.code === 'auth/wrong-password') {
+                    // Correct email, wrong password
+                    showAlert("Incorrect password. Please try again.", "Login Failed", "error");
+                } else if (error.code === 'auth/user-not-found') {
+                    // Both email and password wrong
+                    showAlert("Invalid credentials. Please sign up for an account.", "Account Not Found", "error");
+                } else if (error.code === 'auth/invalid-credential') {
+                    // General invalid credential
+                    showAlert("Invalid email or password.", "Login Failed", "error");
+                } else if (error.code === 'auth/network-request-failed') {
+                    // Network error
+                    showAlert("Network error. Please check your connection and try again.", "Connection Error", "error");
+                } else if (error.code === 'auth/too-many-requests') {
+                    // Too many attempts
+                    showAlert("Too many failed attempts. Please try again later.", "Too Many Attempts", "error");
+                } else {
+                    // Other errors
+                    showAlert("Login failed. Please check your connection and try again.", "Error", "error");
+                }
+            } finally {
+                // Reset button state
+                loginBtn.querySelector('.btn-text').classList.remove('hidden');
+                loginBtn.querySelector('.btn-loading').classList.add('hidden');
+                loginBtn.disabled = false;
+            }
         }
 
-        function signup() {
+        async function signup() {
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
+            const signupBtn = document.getElementById('signupBtn');
             
             if (!name || !email || !password) {
-                showNotification("Please fill all fields", "error");
+                showAlert("Please fill all fields", "Missing Information", "warning");
                 return;
             }
             
             if (password.length < 6) {
-                showNotification("Password must be at least 6 characters", "error");
+                showAlert("Password must be at least 6 characters", "Weak Password", "warning");
                 return;
             }
             
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Update user profile
-                    return userCredential.user.updateProfile({
-                        displayName: name
-                    });
-                })
-                .then(() => {
-                    showNotification("Account created successfully!");
-                    showLogin();
-                })
-                .catch((error) => {
-                    showNotification("Signup failed: " + error.message, "error");
+            // Show loading
+            signupBtn.querySelector('.btn-text').classList.add('hidden');
+            signupBtn.querySelector('.btn-loading').classList.remove('hidden');
+            signupBtn.disabled = true;
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // Update user profile
+                await userCredential.user.updateProfile({
+                    displayName: name
                 });
+                
+                // Create user document
+                await db.collection("users").doc(userCredential.user.uid).set({
+                    email: email,
+                    name: name,
+                    approved: true, // Auto-approve for now
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    totalLinks: 0
+                });
+                
+                showAlert("Account created successfully!", "Success", "success");
+                showLogin();
+                document.getElementById('signupForm').reset();
+                
+            } catch (error) {
+                console.error("Sign up error:", error);
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    showAlert("An account with this email already exists.", "Email Exists", "error");
+                } else if (error.code === 'auth/invalid-email') {
+                    showAlert("Invalid email address.", "Invalid Email", "error");
+                } else if (error.code === 'auth/weak-password') {
+                    showAlert("Password is too weak.", "Weak Password", "error");
+                } else {
+                    showAlert("Sign up failed. Please try again.", "Error", "error");
+                }
+            } finally {
+                signupBtn.querySelector('.btn-text').classList.remove('hidden');
+                signupBtn.querySelector('.btn-loading').classList.add('hidden');
+                signupBtn.disabled = false;
+            }
         }
 
         function logout() {
             auth.signOut()
                 .then(() => {
-                    showNotification("Logged out successfully");
+                    showAlert("Logged out successfully", "Success", "success");
                 })
                 .catch((error) => {
-                    showNotification("Logout error: " + error.message, "error");
+                    showAlert("Logout error: " + error.message, "Error", "error");
                 });
         }
 
@@ -748,7 +1004,7 @@
         async function createShortLink() {
             const user = auth.currentUser;
             if (!user) {
-                showNotification("Please login first", "error");
+                showAlert("Please login first", "Authentication Required", "error");
                 return;
             }
             
@@ -757,7 +1013,7 @@
             const note = document.getElementById('note').value.trim();
             
             if (!originalUrl || !note) {
-                showNotification("Please fill in all required fields", "error");
+                showAlert("Please fill in all required fields", "Missing Information", "warning");
                 return;
             }
             
@@ -765,7 +1021,7 @@
             try {
                 new URL(originalUrl);
             } catch {
-                showNotification("Please enter a valid URL", "error");
+                showAlert("Please enter a valid URL", "Invalid URL", "error");
                 return;
             }
             
@@ -794,9 +1050,10 @@
                 // Reload links
                 loadUserLinks(user.uid);
                 
-                showNotification("Short link created successfully!");
+                showAlert("Short link created successfully!", "Success", "success");
             } catch (error) {
-                showNotification("Error creating link: " + error.message, "error");
+                console.error("Error creating link:", error);
+                showAlert("Error creating link. Please try again.", "Error", "error");
             }
         }
 
@@ -898,16 +1155,16 @@
             try {
                 navigator.clipboard.writeText(element.value)
                     .then(() => {
-                        showNotification("Copied to clipboard!");
+                        showAlert("Copied to clipboard!", "Success", "success");
                     })
                     .catch(() => {
                         // Fallback for older browsers
                         document.execCommand('copy');
-                        showNotification("Copied to clipboard!");
+                        showAlert("Copied to clipboard!", "Success", "success");
                     });
             } catch (error) {
                 document.execCommand('copy');
-                showNotification("Copied to clipboard!");
+                showAlert("Copied to clipboard!", "Success", "success");
             }
         }
 
@@ -932,9 +1189,9 @@
                 
                 closeModal();
                 loadUserLinks(auth.currentUser.uid);
-                showNotification("Link deleted successfully!");
+                showAlert("Link deleted successfully!", "Success", "success");
             } catch (error) {
-                showNotification("Error deleting link: " + error.message, "error");
+                showAlert("Error deleting link. Please try again.", "Error", "error");
             }
         }
 
@@ -946,7 +1203,7 @@
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } else {
-                showNotification("QR Code not available", "error");
+                showAlert("QR Code not available", "Error", "error");
             }
         }
 
@@ -955,6 +1212,11 @@
             const modal = document.getElementById('linkModal');
             if (event.target == modal) {
                 closeModal();
+            }
+            
+            const alertModal = document.getElementById('alertModal');
+            if (event.target == alertModal) {
+                closeAlert();
             }
         };
 
@@ -970,7 +1232,8 @@
                 // User is signed out
                 document.getElementById('authContainer').style.display = 'block';
                 document.getElementById('appContainer').style.display = 'none';
-                showLogin();
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('signupForm').style.display = 'none';
             }
         });
 
@@ -980,7 +1243,7 @@
             
             // Check if Firebase is initialized
             if (!auth || !db) {
-                showNotification("Firebase not initialized properly", "error");
+                showAlert("Firebase not initialized properly", "Configuration Error", "error");
                 return;
             }
             
@@ -995,6 +1258,20 @@
             
             document.getElementById('originalUrl')?.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') createShortLink();
+            });
+            
+            // Show signup button event
+            document.getElementById('showSignUpBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                showSignup();
+            });
+            
+            // Show login button event
+            document.querySelectorAll('[onclick="showLogin()"]').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showLogin();
+                });
             });
         });
 
@@ -1029,4 +1306,4 @@
         }
     </script>
 </body>
-  </html>
+</html>
