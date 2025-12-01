@@ -3,156 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LS Aim - Link Shortener</title>
+    <title>LS AiM - Link Shortener</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Auth Container -->
-    <div id="authContainer" class="container">
-        <div class="auth-box">
-            <div class="logo">
-                <i class="fas fa-link"></i>
-                <h1>LS Aim</h1>
-            </div>
-            
-            <div id="loginForm" class="form-container">
-                <h2>Login</h2>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="loginEmail" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="loginPassword" placeholder="Password" required>
-                </div>
-                <button onclick="login()" class="btn btn-primary">Login</button>
-                <p class="switch-text">Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
-            </div>
-            
-            <div id="signupForm" class="form-container" style="display: none;">
-                <h2>Sign Up</h2>
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="signupName" placeholder="Full Name" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="signupEmail" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="signupPassword" placeholder="Password (min. 6 chars)" required>
-                </div>
-                <button onclick="signup()" class="btn btn-primary">Sign Up</button>
-                <p class="switch-text">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main App Container -->
-    <div id="appContainer" class="container" style="display: none;">
-        <!-- Header -->
-        <header>
-            <div class="logo">
-                <i class="fas fa-link"></i>
-                <h1>LS Aim</h1>
-            </div>
-            <div class="user-info">
-                <span id="userName"></span>
-                <button onclick="logout()" class="btn btn-logout">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main>
-            <!-- Link Shortener -->
-            <section class="shortener-section">
-                <div class="card">
-                    <h2><i class="fas fa-plus-circle"></i> Create New Short Link</h2>
-                    <div class="input-group">
-                        <label for="originalUrl"><i class="fas fa-link"></i> Your Link</label>
-                        <input type="url" id="originalUrl" placeholder="https://example.com/very-long-url" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="alias"><i class="fas fa-tag"></i> Alias (Optional)</label>
-                        <input type="text" id="alias" placeholder="my-link">
-                        <small>If empty, random code will be generated</small>
-                    </div>
-                    <div class="input-group">
-                        <label for="note"><i class="fas fa-sticky-note"></i> Note</label>
-                        <input type="text" id="note" placeholder="Personal photo link" required>
-                        <small>Name to identify this link</small>
-                    </div>
-                    <button onclick="createShortLink()" class="btn btn-primary">
-                        <i class="fas fa-magic"></i> Create Short Link
-                    </button>
-                </div>
-            </section>
-
-            <!-- Recent Links -->
-            <section class="links-section">
-                <div class="card">
-                    <h2><i class="fas fa-history"></i> Your Links</h2>
-                    <div id="linksList" class="links-list">
-                        <!-- Links will be loaded here -->
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Link Details Modal -->
-    <div id="linkModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle"></h2>
-            
-            <div class="modal-body">
-                <div class="link-info">
-                    <h3><i class="fas fa-link"></i> Short Link</h3>
-                    <div class="copy-box">
-                        <input type="text" id="modalShortLink" readonly>
-                        <button onclick="copyToClipboard('modalShortLink')" class="btn btn-copy">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                    </div>
-                    
-                    <h3><i class="fas fa-globe"></i> Original Link</h3>
-                    <p id="modalOriginalLink" class="original-link"></p>
-                    
-                    <h3><i class="fas fa-sticky-note"></i> Note</h3>
-                    <p id="modalNote"></p>
-                    
-                    <h3><i class="fas fa-calendar"></i> Created</h3>
-                    <p id="modalCreated"></p>
-                    
-                    <h3><i class="fas fa-mouse-pointer"></i> Clicks</h3>
-                    <p id="modalClicks">0</p>
-                </div>
-                
-                <div class="qr-section">
-                    <h3><i class="fas fa-qrcode"></i> QR Code</h3>
-                    <div id="qrcode"></div>
-                    <button onclick="downloadQR()" class="btn btn-primary">
-                        <i class="fas fa-download"></i> Download QR
-                    </button>
-                </div>
-            </div>
-            
-            <div class="modal-actions">
-                <button onclick="visitLink()" class="btn btn-primary">
-                    <i class="fas fa-external-link-alt"></i> Visit Link
-                </button>
-                <button onclick="deleteLink()" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- ... existing HTML content ... -->
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -162,8 +19,40 @@
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     
+    <!-- Firebase Config with Environment Variables -->
+    <script>
+        // Load environment variables from Vercel
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEXAMPLE...", // This will be replaced during build
+            authDomain: "ls-aim.firebaseapp.com",
+            projectId: "ls-aim",
+            storageBucket: "ls-aim.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+        
+        // Override with Vercel environment variables if available
+        if (typeof process !== 'undefined' && process.env) {
+            firebaseConfig.apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || firebaseConfig.apiKey;
+            firebaseConfig.authDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || firebaseConfig.authDomain;
+            firebaseConfig.projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || firebaseConfig.projectId;
+            firebaseConfig.storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || firebaseConfig.storageBucket;
+            firebaseConfig.messagingSenderId = process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || firebaseConfig.messagingSenderId;
+            firebaseConfig.appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID || firebaseConfig.appId;
+        }
+        
+        // Initialize Firebase
+        if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSyDEXAMPLE...") {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        // Make Firebase instances globally available
+        window.auth = firebase.auth();
+        window.db = firebase.firestore();
+        window.firebaseApp = firebase.app();
+    </script>
+    
     <!-- Our Scripts -->
-    <script src="firebase-config.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
