@@ -1,5 +1,36 @@
 // Auth state observer
-auth.onAuthStateChanged((user) => {
+// Use globally available Firebase instances
+const auth = window.auth;
+const db = window.db;
+
+// Check if Firebase is initialized
+if (!auth || !db) {
+    console.error("Firebase not initialized. Please check your configuration.");
+    
+    // Show error message to user
+    document.addEventListener('DOMContentLoaded', function() {
+        const authContainer = document.getElementById('authContainer');
+        if (authContainer) {
+            authContainer.innerHTML = `
+                <div class="error-message" style="text-align: center; padding: 50px;">
+                    <h2>Configuration Error</h2>
+                    <p>Firebase configuration is missing. Please check environment variables.</p>
+                    <p>If you're the developer, make sure to set:</p>
+                    <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                        <li>NEXT_PUBLIC_FIREBASE_API_KEY</li>
+                        <li>NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN</li>
+                        <li>NEXT_PUBLIC_FIREBASE_PROJECT_ID</li>
+                        <li>NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET</li>
+                        <li>NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID</li>
+                        <li>NEXT_PUBLIC_FIREBASE_APP_ID</li>
+                    </ul>
+                </div>
+            `;
+        }
+    });
+}
+
+// Rest of your existing app.js code...auth.onAuthStateChanged((user) => {
     if (user) {
         // User is signed in
         document.getElementById('authContainer').style.display = 'none';
